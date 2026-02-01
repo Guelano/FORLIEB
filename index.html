@@ -4,25 +4,188 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Valentine ?</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Confettis */
+    .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 500px;
+      z-index: 10;
+      transition: opacity 0.4s;
+    }
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    h1 {
+      font-size: 28px;
+      color: #d63031;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+    .buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 14px 32px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+    .yes {
+      background: #ff6b6b;
+      color: white;
+    }
+    .no {
+      background: #f1f2f6;
+      color: #636e72;
+    }
+    .hint {
+      font-size: 14px;
+      color: #aaa;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    #celebration h2 {
+      font-size: 36px;
+      color: #ff4757;
+      margin-bottom: 20px;
+    }
+    .heart {
+      font-size: 60px;
+      animation: pulse 1.5s infinite;
+      margin: 20px 0;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Écran de question -->
   <div class="container" id="question">
-    <img src="https://cdn-icons-png.flaticon.com/512/3076/3076449.png" alt="Chat cœur" class="cat" />
-    <h1 id="message">Nirali, veux-tu être mon/ma Valentine ?</h1>
+    <h1>Nirali, veux-tu être mon/ma Valentine ? ❤️</h1>
     <div class="buttons">
-      <button id="yesBtn" class="btn yes">Oui ❤️</button>
-      <button id="noBtn" class="btn no">Non 😅</button>
+      <button class="btn yes" onclick="accept()">Oui ❤️</button>
+      <button class="btn no" id="noBtn">Non 😅</button>
     </div>
     <p class="hint">« Non » semble un peu timide… 🫣</p>
   </div>
 
+  <!-- Écran de célébration -->
   <div class="container hidden" id="celebration">
     <h2>YAY ! 🎉</h2>
-    <img src="assets/celebration.gif" alt="Réaction festive" class="celebration-gif" />
-    <p>Je t’aime trop ❤️</p>
+    <div class="heart">❤️</div>
+    <p style="font-size: 20px; color: #2d3436;">Je t’aime trop !</p>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // === 1. Gestion du bouton "Oui" ===
+    function accept() {
+      // Cache la question, affiche la célébration
+      document.getElementById('question').classList.add('hidden');
+      document.getElementById('celebration').classList.remove('hidden');
+
+      // Lance les confettis
+      createConfetti();
+
+      // Optionnel : sauvegarder localement (localStorage)
+      localStorage.setItem('valentineResponse', 'yes');
+    }
+
+    // === 2. Effet de confettis ===
+    function createConfetti() {
+      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#1a535c', '#ff9a9e', '#a55eea'];
+      const container = document.body;
+      const count = 150;
+
+      for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.top = '-10px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.width = (Math.random() * 10 + 5) + 'px';
+        confetti.style.height = confetti.style.width;
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        container.appendChild(confetti);
+
+        // Animer la chute
+        const duration = Math.random() * 3000 + 2000; // 2s à 5s
+        const animation = confetti.animate([
+          { top: '-10px', opacity: 1, transform: 'rotate(0deg)' },
+          { top: window.innerHeight + 'px', opacity: 0, transform: 'rotate(' + (Math.random() * 720 - 360) + 'deg)' }
+        ], {
+          duration: duration,
+          easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+        });
+
+        // Supprimer après animation
+        animation.onfinish = () => {
+          confetti.remove();
+        };
+      }
+    }
+
+    // === 3. Bouton "Non" qui fuit à l'approche de la souris ===
+    const noBtn = document.getElementById('noBtn');
+    noBtn.addEventListener('mouseover', () => {
+      const maxX = window.innerWidth - noBtn.offsetWidth;
+      const maxY = window.innerHeight - noBtn.offsetHeight;
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+      noBtn.style.zIndex = '100';
+    });
+
+    // === 4. Si déjà répondu "Oui", aller directement à la célébration ===
+    if (localStorage.getItem('valentineResponse') === 'yes') {
+      document.getElementById('question').classList.add('hidden');
+      document.getElementById('celebration').classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>
