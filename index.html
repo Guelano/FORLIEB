@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Valentine ?</title>
   <style>
     * {
@@ -22,7 +25,7 @@
       position: relative;
     }
 
-    /* Particules de fond (célébration) */
+    /* Particules de fond */
     .particle {
       position: absolute;
       width: 4px;
@@ -147,40 +150,32 @@
     <h2>YAY ! 🎉</h2>
     <div class="heart">❤️</div>
     <div class="love-letter" id="loveLetter"></div>
+    <!-- Bouton pour recommencer -->
+    <button class="btn yes" onclick="resetGame()" style="margin-top: 20px; font-size: 16px;">
+      ❤️ Revivre la magie
+    </button>
   </div>
 
   <script>
-    // === TEXTE PERSONNALISÉ (à modifier selon ton envie) ===
+    // === MESSAGE PERSONNALISÉ ===
     const loveMessage = "Depuis le jour où je t’ai vu, mon cœur bat plus fort. Merci d’être toi. ❤️";
 
-    // === 1. Gestion du bouton "Oui" ===
+    // === CLIQUER SUR OUI ===
     function accept() {
-      // Cache la question
       document.getElementById('question').classList.add('hidden');
-      
-      // Explosion de cœur
       explodeHeart();
-      
-      // Lance les confettis + particules
       createConfetti();
       createParticles();
-      
-      // Joue un son doux
       playCelebrationSound();
-      
-      // Vibration (mobile)
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
       
-      // Affiche la célébration après un court délai
       setTimeout(() => {
         document.getElementById('celebration').classList.remove('hidden');
         typeLoveLetter();
       }, 800);
-
-      localStorage.setItem('valentineResponse', 'yes');
     }
 
-    // === 2. Explosion de cœur ===
+    // === EXPLOSION DE CŒUR ===
     function explodeHeart() {
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
@@ -195,7 +190,7 @@
         const angle = Math.random() * Math.PI * 2;
         const distance = 100 + Math.random() * 200;
         const x = Math.cos(angle) * distance;
-        const y = Math.sin(angle) * distance - 100; // vers le haut
+        const y = Math.sin(angle) * distance - 100;
 
         piece.animate([
           { opacity: 0, transform: 'translate(0, 0) scale(0)' },
@@ -208,7 +203,7 @@
       }
     }
 
-    // === 3. Confettis (inchangé mais optimisé) ===
+    // === CONFETTIS ===
     function createConfetti() {
       const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#1a535c', '#ff9a9e', '#a55eea'];
       for (let i = 0; i < 120; i++) {
@@ -233,7 +228,7 @@
       }
     }
 
-    // === 4. Particules de fond (étoiles scintillantes) ===
+    // === PARTICULES DE FOND ===
     function createParticles() {
       for (let i = 0; i < 50; i++) {
         const p = document.createElement('div');
@@ -245,14 +240,13 @@
         p.style.height = p.style.width;
         document.body.appendChild(p);
 
-        // Faire scintiller
         setInterval(() => {
           p.style.opacity = Math.random() * 0.5 + 0.1;
         }, 1000 + Math.random() * 2000);
       }
     }
 
-    // === 5. Son de célébration (Web Audio API) ===
+    // === SON DE CÉLÉBRATION ===
     function playCelebrationSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -275,9 +269,11 @@
       }
     }
 
-    // === 6. Typing effect pour la lettre d'amour ===
+    // === LETTRE D'AMOUR ANIMÉE ===
     function typeLoveLetter() {
       const el = document.getElementById('loveLetter');
+      el.textContent = '';
+      el.style.opacity = 0;
       let i = 0;
       const timer = setInterval(() => {
         if (i < loveMessage.length) {
@@ -285,12 +281,12 @@
           i++;
         } else {
           clearInterval(timer);
+          setTimeout(() => el.style.opacity = 1, 100);
         }
       }, 60);
-      setTimeout(() => el.style.opacity = 1, 100);
     }
 
-    // === 7. Bouton "Non" qui fuit ===
+    // === BOUTON "NON" QUI FUIT ===
     const noBtn = document.getElementById('noBtn');
     noBtn.addEventListener('mouseover', () => {
       const maxX = window.innerWidth - noBtn.offsetWidth;
@@ -303,12 +299,13 @@
       noBtn.style.zIndex = '100';
     });
 
-    // === 8. Chargement depuis localStorage ===
-    if (localStorage.getItem('valentineResponse') === 'yes') {
-      document.getElementById('question').classList.add('hidden');
-      document.getElementById('celebration').classList.remove('hidden');
-      createParticles();
-      typeLoveLetter();
+    // === RECOMMENCER ===
+    function resetGame() {
+      document.getElementById('celebration').classList.add('hidden');
+      document.getElementById('question').classList.remove('hidden');
+      
+      // Nettoyer les effets visuels résiduels
+      document.querySelectorAll('.confetti, .heart-piece, .particle').forEach(el => el.remove());
     }
   </script>
 </body>
