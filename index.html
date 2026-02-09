@@ -23,6 +23,22 @@
       padding: 20px;
       overflow: hidden;
       position: relative;
+      transition: background 1s ease; /* optionnel mais joli */
+    }
+
+    /* Fond semi-transparent dédié */
+    #bg-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 1s ease;
     }
 
     /* Particules de fond */
@@ -135,6 +151,9 @@
   </style>
 </head>
 <body>
+  <!-- Arrière-plan semi-transparent -->
+  <div id="bg-overlay"></div>
+
   <!-- Écran de question -->
   <div class="container" id="question">
     <h1>Fortuné, veux-tu être ma Valentine ? ❤️</h1>
@@ -163,6 +182,12 @@
     // === CLIQUER SUR OUI ===
     function accept() {
       document.getElementById('question').classList.add('hidden');
+      
+      // Afficher l'image de fond semi-transparente
+      const bgOverlay = document.getElementById('bg-overlay');
+      bgOverlay.style.backgroundImage = "url('love.jpg')"; // ← MODIFIE ICI
+      bgOverlay.style.opacity = "0.6"; // Ajuste entre 0.4 et 0.8 selon ton goût
+
       explodeHeart();
       createConfetti();
       createParticles();
@@ -306,6 +331,9 @@
       
       // Nettoyer les effets visuels résiduels
       document.querySelectorAll('.confetti, .heart-piece, .particle').forEach(el => el.remove());
+      
+      // Cacher l'arrière-plan semi-transparent
+      document.getElementById('bg-overlay').style.opacity = "0";
     }
   </script>
 </body>
